@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import pdb # debug
+#import pdb # debug
 import sys
 from selenium import webdriver
 import time
@@ -89,7 +89,7 @@ Centers = []
 while True:
     try:
         if Mode == "Pin":
-            Centers.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div/div/div/div[2]/form/div/div/div[7]/div/div/div/div[' + str(len(Centers)+1) + ']/div/div/div[1]/div/h5').text);
+            Centers.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div/div/div/div[2]/form/div/div/div[10]/div/div/div/div[' + str(len(Centers)+1) + ']/div/div/div[1]/div/h5').text);
         else:
             Centers.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div[1]/div/div/div[2]/form/div/div/div[6]/div/div/div/div[' + str(len(Centers)+1) + ']/div/div/div[1]/div/h5').text);
         print(Centers[len(Centers)-1])
@@ -100,13 +100,13 @@ while True:
 
             # Get date
             if Mode == "Pin":
-                DatesCarousel.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div/div/div/div[2]/form/div/div/div[6]/div/div/ul/carousel/div/div/slide[' + str(d+1) + ']/div/li/a/p').text)
+                DatesCarousel.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div/div/div/div[2]/form/div/div/div[9]/div/div/ul/carousel/div/div/slide[' + str(d+1) + ']/div/li/a/p').text)
             else:
                 DatesCarousel.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div[1]/div/div/div[2]/form/div/div/div[5]/div/div/ul/carousel/div/div/slide[' + str(d+1) + ']/div/li/a/p').text)
 
             # Get does
             if Mode == "Pin":
-                Availability.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div/div/div/div[2]/form/div/div/div[7]/div/div/div/div[' + str(len(Centers)) + ']/div/div/div[2]/ul/li[' + str(len(Availability)+1) + ']/div/div/a').text)
+                Availability.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div/div/div/div[2]/form/div/div/div[10]/div/div/div/div[' + str(len(Centers)) + ']/div/div/div[2]/ul/li[' + str(len(Availability)+1) + ']/div/div/a').text)
             else:
                 Availability.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div[1]/div/div/div[2]/form/div/div/div[6]/div/div/div/div[' + str(len(Centers)) + ']/div/div/div[2]/ul/li[' + str(len(Availability)+1) + ']/div/div/a').text)
 
@@ -114,6 +114,7 @@ while True:
         print(Availability)
 
     except Exception as e:
+        print(e)
         break
 
 print('Done :)')
