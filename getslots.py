@@ -102,6 +102,7 @@ while True:
 
         DatesCarousel = []
         Availability = []
+        VaccineType = []
         for d in range(6):
 
             # Get date
@@ -115,8 +116,16 @@ while True:
                 Availability.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div/div/div/div[2]/form/div/div/div[10]/div/div/div/div[' + str(len(Centers)) + ']/div/div/div[2]/ul/li[' + str(len(Availability)+1) + ']/div/div/a').text)
             else:
                 Availability.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div[1]/div/div/div[2]/form/div/div/div[9]/div/div/div/div[' + str(len(Centers)) + ']/div/div/div[2]/ul/li[' + str(len(Availability)+1) + ']/div/div/a').text)
+
+            # Get vaccine type
+            if Mode == "Pin":
+                VaccineType.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div/div/div/div[2]/form/div/div/div[10]/div/div/div/div[' + str(len(Centers)) + ']/div/div/div[2]/ul/li[' + str(len(VaccineType)+1) + ']/div/div/div[1]/h5').text)
+            else:
+                VaccineType.append(web.find_element_by_xpath('/html/body/app-root/div/app-home/div[2]/div/appointment-table/div/div/div/div/div/div/div/div/div/div/div[2]/form/div/div/div[9]/div/div/div/div[' + str(len(Centers)) + ']/div/div/div[2]/ul/li[' + str(len(VaccineType)+1) + ']/div/div/div[1]/h5').text)
+
         print(DatesCarousel)
         print(Availability)
+        print(VaccineType)
 
     except NoSuchElementException as e:
         #print(e)
