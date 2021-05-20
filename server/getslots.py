@@ -11,13 +11,23 @@ import time
 # > getslots.py <state> <district>
 
 # NPI de sintaxis de clases en pyton..
-#class TimePlaceDoses
-#    def __init__(doses, vaccineType)
+class TimePlaceDoses:
+    date = ''
+    type = ''
+    slots = ''
+
+#        def __init__(doses, vaccineType):
 #        self.doses = doses
 #        self.vaccineType = vaccineType
 
-#class Center
+class Center:
+    name = ''
+    addres = ''
+    #doses = TimePlaceDoses()[]
+
 #    def __init__(TimePlaceDoses[])
+
+
 
 web = webdriver.Chrome()
 web.get('https://www.cowin.gov.in/home')
@@ -89,6 +99,9 @@ else:
 WebAge18filter.click()
 
 print()
+
+Vaccines = Center()
+print(type(Vaccines))
 
 # Get info
 Centers = []
