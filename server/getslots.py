@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 #import pdb # debug
 import sys
+import time
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-import time
+from xvfbwrapper import Xvfb
 
 # Usage:
 # > getslots.py    #226010 by default
@@ -27,7 +28,10 @@ class Center:
 
 #    def __init__(TimePlaceDoses[])
 
-
+# Start Xvfb wrapper
+# Comment to see what is doing in the browser
+vdisplay = Xvfb()
+vdisplay.start()
 
 web = webdriver.Chrome()
 web.get('https://www.cowin.gov.in/home')
@@ -144,5 +148,6 @@ while True:
         #print(e)
         break
 
+vdisplay.stop()
 print('Done :)')
 #print(Centers)
