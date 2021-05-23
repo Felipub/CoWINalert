@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CoWin</string>
+    <string name="toast_login_successfully">Login done successfully</string>
+    <string name="toast_login_error">Login Error</string>
 </resources>
