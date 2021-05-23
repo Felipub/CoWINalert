@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -62,43 +63,9 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
         buttonZipcode = (Button)findViewById(R.id.buttonZipcode);
         buttonCity = (Button)findViewById(R.id.buttonCity);
 
-        buttonZipcode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Cancel previous alarm and update with new parameters
-                if (alarmManager != null){
-                    alarmManager.cancel(pendingIntent);
-                }
-                zipcode = etZipcode.getText().toString();
-                // Intent needed to send and recieve information from Notification_reciever
-                // Notification_receiver =  class to implement the python script on server
-                //                          & creates the alarm that will appear on top
-                intent = new Intent(getApplicationContext(), Notification_receiver.class);
-                intent.setAction("ZIPCODE:"+ zipcode);
-                pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),100,intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,TIMER,TIMER,pendingIntent);
-                if (pendingIntent != null && alarmManager != null) {
-                    alarmManager.cancel(pendingIntent);
-                }
 
-            }
-
-        });
-
-        buttonCity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Cancel previous alarm and update with new parameters
-                if (alarmManager != null){
-                    alarmManager.cancel(pendingIntent);
-                }
-                district = etDistrict.getText().toString();
-                state = etState.getText().toString();
-
-            }
-        });
+        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
 
         firebaseCalls = new FirebaseCalls(this);
 
@@ -125,9 +92,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
         }
 
     }
-    protected void setAlarm(String dataSend){
 
-    }
 
     @Override
     protected void onResume() {
