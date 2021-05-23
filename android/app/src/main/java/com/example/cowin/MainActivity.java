@@ -18,9 +18,9 @@ public class MainActivity extends AppCompatActivity {
     String district,state,zipcode;
     // Others
     Boolean searchZipcode;
-    private final long TIMER = 60*1000; //milliseconds
+    private final long TIMER = 20*1000; //milliseconds
     Intent intent;
-    PendingIntent pendingIntent;
+    PendingIntent pendingIntent;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
     AlarmManager alarmManager;
 
     @Override
@@ -47,12 +47,13 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(getApplicationContext(), Notification_receiver.class);
                 intent.setAction("ZIPCODE:"+ zipcode);
                 pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),100,intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
+                System.out.println("Time in milisecond = " + System.currentTimeMillis());
                 alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,TIMER,TIMER,pendingIntent);
-                if (pendingIntent != null && alarmManager != null) {
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),TIMER,pendingIntent);
+
+                /*if (pendingIntent != null && alarmManager != null) {
                     alarmManager.cancel(pendingIntent);
-                }
+                }*/
 
             }
 
