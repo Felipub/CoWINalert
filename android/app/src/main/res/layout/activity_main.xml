@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <Switch
+        android:id="@+id/switch_sputnikv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Sputnik V"
+        app:layout_constraintEnd_toEndOf="@+id/switch4_covaxin"
+        app:layout_constraintStart_toStartOf="@+id/switch4_covaxin"
+        app:layout_constraintTop_toBottomOf="@+id/switch4_covaxin" />
+
     <TextView
         android:id="@+id/topPanel"
         android:layout_width="match_parent"
@@ -40,7 +50,7 @@
         android:layout_marginEnd="24dp"
         android:hint="Lucknow"
         android:imeOptions="actionDone"
-        android:inputType="text"
+        android:inputType="number"
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -56,7 +66,7 @@
         android:layout_marginEnd="24dp"
         android:hint="Uttar Pradesh"
         android:imeOptions="actionDone"
-        android:inputType="text"
+        android:inputType="number"
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -64,95 +74,81 @@
         app:layout_constraintTop_toBottomOf="@+id/district" />
 
     <Button
-        android:id="@+id/buttonZipcode"
-        android:layout_width="wrap_content"
+        android:id="@+id/button_letMeKnow"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
-        android:text="Search Zipcode"
+        android:text="Please let me know when "
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/state" />
 
+    <Switch
+        android:id="@+id/switch_plus18"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="18+"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_letMeKnow" />
 
-    <Button
-        android:id="@+id/buttonCity"
-        android:layout_width="wrap_content"
+    <Switch
+        android:id="@+id/switch_plus45"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
-        android:text="Search District"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.906"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/state" />
+        android:text="45+"
+        app:layout_constraintEnd_toEndOf="@+id/switch_plus18"
+        app:layout_constraintStart_toStartOf="@+id/switch_plus18"
+        app:layout_constraintTop_toBottomOf="@+id/switch_plus18" />
 
-
-    <ScrollView
-        android:layout_width="match_parent"
+    <Switch
+        android:id="@+id/switch_coviShield"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.906"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonZipcode"
-        >
+        android:text="Covi Shield"
+        app:layout_constraintEnd_toEndOf="@+id/switch_plus45"
+        app:layout_constraintStart_toStartOf="@+id/switch_plus45"
+        app:layout_constraintTop_toBottomOf="@+id/switch_plus45" />
 
+    <Switch
+        android:id="@+id/switch4_covaxin"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Covaxin"
+        app:layout_constraintEnd_toEndOf="@+id/switch_coviShield"
+        app:layout_constraintStart_toStartOf="@+id/switch_coviShield"
+        app:layout_constraintTop_toBottomOf="@+id/switch_coviShield" />
 
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:rowCount="3">
+    <Switch
+        android:id="@+id/switch_free"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Free"
+        app:layout_constraintEnd_toEndOf="@+id/switch_sputnikv"
+        app:layout_constraintStart_toStartOf="@+id/switch_sputnikv"
+        app:layout_constraintTop_toBottomOf="@+id/switch_sputnikv" />
 
-
-            <TextView
-                android:id="@+id/dateGrid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_row="1"
-                android:layout_column="0"
-                android:layout_marginLeft="24dp"
-                android:layout_marginRight="10dp"
-                android:background="#95A1E4"
-                android:gravity="center_horizontal"
-                android:minWidth="100dp"
-                android:text="Date"
-                android:textAlignment="center" />
-
-            <TextView
-                android:id="@+id/availabilityGrid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minWidth="100dp"
-                android:textAlignment="center"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="24dp"
-                android:layout_row="1"
-                android:layout_column="2"
-                android:background="#95A1E4"
-                android:text="Availability"
-                android:gravity="center_horizontal"
-                />
-
-            <TextView
-                android:id="@+id/vaccineGrid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minWidth="140dp"
-                android:layout_row="1"
-                android:layout_column="1"
-                android:background="#95A1E4"
-                android:gravity="center_horizontal"
-                android:text="Vaccine Name"
-                android:textAlignment="center" />
-
-        </GridLayout>
-
-    </ScrollView>
+    <Switch
+        android:id="@+id/switch_paid"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Paid"
+        app:layout_constraintEnd_toEndOf="@+id/switch_free"
+        app:layout_constraintStart_toStartOf="@+id/switch_free"
+        app:layout_constraintTop_toBottomOf="@+id/switch_free" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

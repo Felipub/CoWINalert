@@ -8,26 +8,19 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import Classes.LocalUser;
 import Interfaces.FirebaseInterface;
@@ -40,7 +33,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
 
     //Objects from layout
     EditText etZipcode, etDistrict, etState;
-    Button buttonZipcode, buttonCity;
+    Button button_letMeKnow;
+    Switch plus18, plus45, covishield, covaxin, sputnikv, free, paid;
     // Storing the dta from objects
     String district,state,zipcode;
     // Others
@@ -60,9 +54,31 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
         etZipcode = (EditText) findViewById(R.id.zipcode);
         etDistrict = (EditText) findViewById(R.id.district);
         etState = (EditText) findViewById(R.id.state);
-        buttonZipcode = (Button)findViewById(R.id.buttonZipcode);
-        buttonCity = (Button)findViewById(R.id.buttonCity);
+        button_letMeKnow = (Button)findViewById(R.id.button_letMeKnow);
+        plus18 = (Switch) findViewById(R.id.switch_plus18);
+        plus45 = (Switch) findViewById(R.id.switch_plus45);
+        covishield = (Switch) findViewById(R.id.switch_coviShield);
+        covaxin = (Switch) findViewById(R.id.switch4_covaxin);
+        sputnikv = (Switch) findViewById(R.id.switch_sputnikv);
+        free = (Switch) findViewById(R.id.switch_free);
+        paid = (Switch) findViewById(R.id.switch_paid);
 
+        button_letMeKnow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                localUser.setPlus18(plus18.isChecked());
+                localUser.setPlus45(plus45.isChecked());
+                localUser.setCovishield(covishield.isChecked());
+                localUser.setCovaxin(covaxin.isChecked());
+                localUser.setSputnikV(sputnikv.isChecked());
+                localUser.setFree(free.isChecked());
+                localUser.setPaid(paid.isChecked());
+                localUser.setPin(etZipcode.getText().toString().equalsIgnoreCase("") ? -1 : Integer.valueOf(etZipcode.getText().toString()));
+                localUser.setDistrict(etDistrict.getText().toString().equalsIgnoreCase("") ? -1 : Integer.valueOf(etDistrict.getText().toString()));
+                localUser.setState(etState.getText().toString().equalsIgnoreCase("") ? -1 : Integer.valueOf(etState.getText().toString()));
+                firebaseCalls.uploadLocalUserData(localUser);
+            }
+        });
 
 
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
@@ -88,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
         }else{
             localUser = new LocalUser(this, FirebaseAuth.getInstance().getCurrentUser().getUid());
             Log.d(TAG,localUser.toString());
-            //firebaseCalls.uploadLocalUserData(localUser);
         }
 
     }
