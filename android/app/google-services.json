@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "748563946866",
+    "project_id": "cowinalert-25025",
+    "storage_bucket": "cowinalert-25025.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:748563946866:android:ee19f78f369f35cd0b91eb",
+        "android_client_info": {
+          "package_name": "org.cowinalert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "748563946866-c0tkg147l7o0ll0902eq911gat687smg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDK57Suz6dclCgFzrESKaXwv_o_H4E9QLM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "748563946866-c0tkg147l7o0ll0902eq911gat687smg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
