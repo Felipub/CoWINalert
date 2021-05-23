@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
         }else{
             localUser = new LocalUser(this, FirebaseAuth.getInstance().getCurrentUser().getUid());
             Log.d(TAG,localUser.toString());
+            setupUIFromLocalUser();
         }
 
     }
@@ -142,7 +143,21 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
     public void onGetUserDataSuccess(DocumentSnapshot data) {
         Log.d(TAG,"Hey, wait a second, we already have a user on the ddbb, get his/her data back "+data.getData().toString());
         localUser.setLocalUserFromFirebase(data.getData());
+        setupUIFromLocalUser();
     }
 
+
+    private void setupUIFromLocalUser(){
+        etDistrict.setText(localUser.getDistrict()==-1?"":String.valueOf(localUser.getDistrict()));
+        etState   .setText(localUser.getState()==-1?"":String.valueOf(localUser.getState()));
+        etZipcode .setText(localUser.getPin()==-1?"":String.valueOf(localUser.getPin()));
+        plus18.setChecked(localUser.isPlus18());
+        plus45.setChecked(localUser.isPlus45());
+        covaxin.setChecked(localUser.isCovaxin());
+        sputnikv.setChecked(localUser.isSputnikV());
+        covishield.setChecked(localUser.isCovishield());
+        free.setChecked(localUser.isFree());
+        paid.setChecked(localUser.isPaid());
+    }
 
 }

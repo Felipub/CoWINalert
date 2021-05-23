@@ -20,7 +20,7 @@ public class LocalUser {
     public static final String KEY_FREE       = "free";
     public static final String KEY_PAID       = "paid";
 
-    private int     pin        = -1,
+    private long     pin        = -1,
                     state      = -1,
                     district   = -1;
     private String  uid        = null;
@@ -40,9 +40,9 @@ public class LocalUser {
         sharedPref = context.getSharedPreferences(uid, Context.MODE_PRIVATE);
         sharePrefEditor = sharedPref.edit();
         this.uid        = uid;
-        this.state      = sharedPref.getInt    (KEY_STATE      ,-1);
-        this.district   = sharedPref.getInt    (KEY_DISTRICT   ,-1);
-        this.pin        = sharedPref.getInt    (KEY_PIN        ,-1);
+        this.state      = sharedPref.getLong    (KEY_STATE      ,-1);
+        this.district   = sharedPref.getLong    (KEY_DISTRICT   ,-1);
+        this.pin        = sharedPref.getLong    (KEY_PIN        ,-1);
         this.plus18     = sharedPref.getBoolean(KEY_PLUS18     ,false);
         this.plus45     = sharedPref.getBoolean(KEY_PLUS45     ,false);
         this.covishield = sharedPref.getBoolean(KEY_COVISHIELD ,false);
@@ -63,9 +63,9 @@ public class LocalUser {
     public Map<String, Object> getLocalUserForFirebase(){
         Map<String, Object> user = new HashMap<>();
         user.put(KEY_UID        , uid);
-        user.put(KEY_STATE      , state);
-        user.put(KEY_DISTRICT   , district);
-        user.put(KEY_PIN        , pin);
+        user.put(KEY_STATE      , (int)state);
+        user.put(KEY_DISTRICT   , (int)district);
+        user.put(KEY_PIN        , (int)pin);
         user.put(KEY_PLUS18     , plus18);
         user.put(KEY_PLUS45     , plus45);
         user.put(KEY_COVISHIELD , covishield);
@@ -76,9 +76,9 @@ public class LocalUser {
         return user;
     }
     public void setLocalUserFromFirebase(Map<String, Object> input){
-        setDistrict  ((int)    input.get(KEY_DISTRICT));
-        setState     ((int)    input.get(KEY_STATE));
-        setPin       ((int)    input.get(KEY_PIN));
+        setDistrict  ((long)   input.get(KEY_DISTRICT));
+        setState     ((long)   input.get(KEY_STATE));
+        setPin       ((long)   input.get(KEY_PIN));
         setPlus18    ((boolean)input.get(KEY_PLUS18));
         setPlus45    ((boolean)input.get(KEY_PLUS45));
         setCovishield((boolean)input.get(KEY_COVISHIELD));
@@ -96,17 +96,17 @@ public class LocalUser {
         sharePrefEditor.commit();
     }
 
-    public void setPin(int pin) {
+    public void setPin(long pin) {
         this.pin = pin;
         savePref(KEY_PIN, pin);
     }
 
-    public void setState(int state) {
+    public void setState(long state) {
         this.state = state;
         savePref(KEY_STATE, state);
     }
 
-    public void setDistrict(int district) {
+    public void setDistrict(long district) {
         this.district = district;
         savePref(KEY_DISTRICT, district);
     }
@@ -153,6 +153,46 @@ public class LocalUser {
     public void setPaid(boolean paid) {
         this.paid = paid;
         savePref(KEY_PAID, paid);
+    }
+
+    public long getPin() {
+        return pin;
+    }
+
+    public long getState() {
+        return state;
+    }
+
+    public long getDistrict() {
+        return district;
+    }
+
+    public boolean isPlus18() {
+        return plus18;
+    }
+
+    public boolean isPlus45() {
+        return plus45;
+    }
+
+    public boolean isCovishield() {
+        return covishield;
+    }
+
+    public boolean isCovaxin() {
+        return covaxin;
+    }
+
+    public boolean isSputnikV() {
+        return sputnikV;
+    }
+
+    public boolean isFree() {
+        return free;
+    }
+
+    public boolean isPaid() {
+        return paid;
     }
 
     public boolean isLogged(){
