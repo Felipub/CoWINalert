@@ -75,6 +75,18 @@ public class LocalUser {
         user.put(KEY_PAID       , paid);
         return user;
     }
+    public void setLocalUserFromFirebase(Map<String, Object> input){
+        setDistrict  ((int)    input.get(KEY_DISTRICT));
+        setState     ((int)    input.get(KEY_STATE));
+        setPin       ((int)    input.get(KEY_PIN));
+        setPlus18    ((boolean)input.get(KEY_PLUS18));
+        setPlus45    ((boolean)input.get(KEY_PLUS45));
+        setCovishield((boolean)input.get(KEY_COVISHIELD));
+        setCovaxin   ((boolean)input.get(KEY_COVAXIN));
+        setSputnikV  ((boolean)input.get(KEY_SPUTNIKV));
+        setFree      ((boolean)input.get(KEY_FREE));
+        setPaid      ((boolean)input.get(KEY_PAID ));
+    }
 
     private void savePref(String key, Object value){
         if(value instanceof String)  sharePrefEditor.putString (key, (String)  value);
@@ -102,6 +114,10 @@ public class LocalUser {
     public void setUid(String uid) {
         this.uid = uid;
         savePref(KEY_UID, uid);
+    }
+
+    public String getUid(){
+        return uid;
     }
 
     public void setPlus18(boolean plus18) {

@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
@@ -28,8 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 import Classes.LocalUser;
+import Interfaces.FirebaseInterface;
+import Utils.FirebaseCalls;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FirebaseInterface {
 
     public static final String TAG = "CowinAlarm:::";
     public static final int RC_SIGN_IN = 0;
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     AlarmManager alarmManager;
 
     private LocalUser localUser;
+    private FirebaseCalls firebaseCalls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        firebaseCalls = new FirebaseCalls(this);
 
         if(FirebaseAuth.getInstance().getCurrentUser() == null){
             //Launch Auth
@@ -116,32 +121,8 @@ public class MainActivity extends AppCompatActivity {
         }else{
             localUser = new LocalUser(this, FirebaseAuth.getInstance().getCurrentUser().getUid());
             Log.d(TAG,localUser.toString());
+            //firebaseCalls.uploadLocalUserData(localUser);
         }
-
-
-
-
-        // Add a new document with a generated ID
-        /*FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users")
-                .add(user)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        System.out.println(":::!");
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        System.out.println(":::no");
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });*/
-
-
-
 
     }
     protected void setAlarm(String dataSend){
@@ -164,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 // Successfully signed in
                 localUser = new LocalUser(this,FirebaseAuth.getInstance().getCurrentUser().getUid());
                 Log.d(TAG,localUser.toString());
+                firebaseCalls.getUserDataFromFirebase(localUser.getUid());
                 Toast.makeText(this, getString(R.string.toast_login_successfully), Toast.LENGTH_LONG).show();
             } else {
                 // Sign in failed. If response is null the user canceled the
@@ -175,4 +157,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    public void onGetUserDataSuccess(DocumentSnapshot data) {
+        Log.d(TAG,"Hey, wait a second, we already have a user on the ddbb, get his/her data back "+data.getData().toString());
+        localUser.setLocalUserFromFirebase(data.getData());
+    }
+
+
 }
