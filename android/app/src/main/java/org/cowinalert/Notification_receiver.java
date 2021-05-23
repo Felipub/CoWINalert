@@ -1,4 +1,4 @@
-package com.example.cowin;
+package  org.cowinalert;
 
 import android.app.Notification;
 import android.app.NotificationManager;
