@@ -13,7 +13,7 @@ def GetFirebaseRequests():
     from firebase_admin import firestore
 
     # Use a service account
-    cred = credentials.Certificate('cowinalert-314812-45341a4bc1be.json')
+    cred = credentials.Certificate('cowinalert-25025-3b6e65f1b120.json')
     firebase_admin.initialize_app(cred)
 
     db = firestore.client()
