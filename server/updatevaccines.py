@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#import pdb # debug
+import pdb # debug
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
@@ -13,7 +13,6 @@ from os import path
 alerts = 0;
 
 class FirebaseDB:
-
     def __init__(self):
         #Initialize Cloud Firestore - https://firebase.google.com/docs/firestore/quickstart#python_2
         from firebase_admin import credentials
@@ -36,23 +35,31 @@ class FirebaseDB:
         return fb_docs.to_dict()
 
     def GetUsers(self):
-        users  = self.db.collection(u'users')
-        fb_docs = users.stream()
+        fb_users = self.db.collection(u'users')
+        fb_docs = fb_users.stream()
 
-        #DEBUG#for doc in fb_docs:
-        #DEBUG#    print(f'{doc.id} => {doc.to_dict()}')
-        return fb_docs
+        dict_users = {}
+        for doc in fb_docs:
+            #print(f'{doc.id} => {doc.to_dict()}')
+            dict_users[doc.id] = doc.to_dict()
 
+        return dict_users
 
-def GetRequestsFromUsers(fbdocs_users):
+    def SendAlert(self, user):
+        doc_user = self.db.collection(u'users').document(u''+user['uid']+'')
+        doc_user.set({u'notify' : True}, merge=True)
+        print('   - Alarm notification sent to user: ' + user['uid'])
+
+def GetRequestsFromUsers(dict_users):
     requests = {}
-    for doc in fbdocs_users:
-        user_data = doc.to_dict()
-        #print(user_data)
-        requests[user_data['district']] = ''
-        requests[user_data['pin']] = ''
+    for user in dict_users.values():
+        #DELETE#user_data = doc.to_dict()
+        print(user)
+        print()
+        requests[user['district']] = ''
+        requests[user['pin']] = ''
 
-    print(requests)
+    #print(requests)
     return requests
 
 
@@ -81,18 +88,32 @@ def CowinApiRequestInfo(request_id):
 
     return json_centers_doses
 
-# Return number of alerts submitted
-#   0 for no alerts needed
-#   -1 for Cowin Api error
-#   -2 for Firebase error
-def AlertNewVaccines(center, session, new_vaccines):
+def AlertNewVaccinesToUsers(req_id, center, session, new_doses_1, new_doses_2, dict_users, fb_db):
     global alerts
     now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    print('[' + now + '] >>> Found ' + str(new_vaccines) + ' new doses in ' + center['name'] + ' on ' + session['date'])
+    print('[' + now + '] >>> ' + str(req_id) + ': Found ' + str(new_doses_1 + new_doses_2) + ' new doses in ' + center['name'] + ' on ' + session['date'])
 
-    # TODO: notify to Firebase db if there are new vaccines available
+    #print(fbdocs_users)
 
-    alerts = alerts + 1
+    for user in dict_users.values():
+
+        if (user['district'] == req_id or user['pin'] == req_id):
+
+            if ( (user['covishield'] and session['vaccine'] == 'COVISHIELD')
+                or (user['sputnikv'] and session['vaccine'] == 'SPUTNIKV') # TO CONFIRM!!
+                or  (user['covaxin'] and session['vaccine'] == 'COVAXIN')):
+
+                if (   (user['free'] and center['fee_type'] == 'Free')
+                    or (user['paid'] and center['fee_type'] == 'Paid')):
+
+                    if (    (user['plus18'] and session['min_age_limit'] == 18)
+                        or  (user['plus45'] and session['min_age_limit'] == 45)):
+
+                        if (   (user['dose1'] and new_doses_1 > 0)
+                            or (user['dose2'] and new_doses_2 > 0)):
+
+                            fb_db.SendAlert(user)
+                            alerts = alerts + 1
 
     return 0
 
@@ -102,8 +123,8 @@ def AlertNewVaccines(center, session, new_vaccines):
 FB_DB = FirebaseDB()
 
 #dict_requests = FB_DB.GetRequests() #using cowin table/collection - cannot use trigger functions at the moment
-dict_users = FB_DB.GetUsers()
-dict_requests = GetRequestsFromUsers(dict_users)
+users = FB_DB.GetUsers()
+dict_requests = GetRequestsFromUsers(users)
 
 for request_id in dict_requests:
     #print(f'{doc.id} => {doc.to_dict()}')
@@ -141,18 +162,23 @@ for request_id in dict_requests:
                 for session_now in current_center['sessions']:
                     session_found = False
                     for session_last in last_center['sessions']:
-                        if (session_now['date'] == session_last['date']):
+                        if (session_now['session_id'] == session_last['session_id']):
                             #print('BINGO!! session found ' + str(session_now['date']))
                             session_found = True;
-                            new_vaccines_in_session = session_now['available_capacity_dose1'] - session_last['available_capacity_dose1']
-                            if (new_vaccines_in_session > 0):
-                                AlertNewVaccines(current_center, session_now, new_vaccines_in_session)
+                            new_doses_1_in_session = session_now['available_capacity_dose1'] - session_last['available_capacity_dose1']
+                            new_doses_2_in_session = session_now['available_capacity_dose2'] - session_last['available_capacity_dose2']
+
+                            if (new_doses_1_in_session > 0 or new_doses_2_in_session  > 0):
+                                AlertNewVaccinesToUsers(request_id, current_center, session_now, new_doses_1_in_session, new_doses_2_in_session, users, FB_DB)
                             break  #for of sessions
+
                     if not session_found:
                         # report all vaccines in the session
-                        new_vaccines_in_session = session_now['available_capacity_dose1']
-                        if (new_vaccines_in_session > 0):
-                            AlertNewVaccines(current_center, session_now, new_vaccines_in_session)
+                        new_doses_1_in_session = session_now['available_capacity_dose1']
+                        new_doses_2_in_session = session_now['available_capacity_dose2']
+
+                        if (new_doses_1_in_session > 0 or new_doses_2_in_session  > 0):
+                            AlertNewVaccinesToUsers(request_id, current_center, session_now, new_doses_1_in_session, new_doses_2_in_session, users, FB_DB)
 
                 break #for of centers
 
@@ -162,3 +188,11 @@ for request_id in dict_requests:
     # Overwrite the previous json with current
     with open(file_path, 'w') as outfile:
         json.dump(json_current_vaccines, outfile)
+
+''' TRASH CODE
+Duplicate Firebase document:
+doc_user = FB_DB.db.collection(u'users').document(u'j9TppJgtZSbURxiuFWCjUDr8cBC2').get().to_dict()
+doc_user2 = FB_DB.db.collection(u'users').document(u'eDPfonMUbxUX35rUtxkL5JeSXUx1').get()
+dict_user2 = doc_user.copy()
+FB_DB.db.collection(u'users').document(u'eDPfonMUbxUX35rUtxkL5JeSXUx1').set(dict_user2, merge=True)
+'''
