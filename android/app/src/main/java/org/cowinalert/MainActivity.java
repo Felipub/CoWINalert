@@ -60,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
     private LocalUser localUser;
     private FirebaseCalls firebaseCalls;
 
+    HashMap<String, Integer> districtsValues = new HashMap<>();
+    HashMap<String, Integer> statesValues = new HashMap<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,8 +80,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
         paid = (Switch) findViewById(R.id.switch_paid);
 
         JSONArray listStates = jsonUtils.getListOfStatesAndDistricts(this);
-        HashMap<String, Integer> districtsValues = new HashMap<>();
-        HashMap<String, Integer> statesValues = new HashMap<>();
+        districtsValues = new HashMap<>();
+        statesValues = new HashMap<>();
         HashMap<String, List<String>> statesDistrictis = new HashMap<>();
         List<String> states =  new ArrayList<String>();
 
@@ -138,8 +141,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
                 localUser.setFree(free.isChecked());
                 localUser.setPaid(paid.isChecked());
                 localUser.setPin(etZipcode.getText().toString().equalsIgnoreCase("") ? -1 : Integer.valueOf(etZipcode.getText().toString()));
-                localUser.setDistrict(sDistrict.getSelectedItem().toString().equalsIgnoreCase("") ? -1 : Integer.valueOf(sDistrict.getSelectedItem().toString()));
-                localUser.setState(sState.getSelectedItem().toString().equalsIgnoreCase("") ? -1 : Integer.valueOf(sState.getSelectedItem().toString()));
+                localUser.setDistrict(districtsValues.get(sDistrict.getSelectedItem().toString()));
+                localUser.setState(statesValues.get(sState.getSelectedItem().toString()));
                 firebaseCalls.uploadLocalUserData(localUser);
             }
         });
