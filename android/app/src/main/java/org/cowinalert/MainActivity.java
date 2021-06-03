@@ -6,8 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -18,13 +21,22 @@ import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.JsonArray;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import Classes.LocalUser;
 import Interfaces.FirebaseInterface;
 import Utils.FirebaseCalls;
+import Utils.jsonUtils;
 
 public class MainActivity extends AppCompatActivity implements FirebaseInterface {
 
@@ -32,9 +44,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
     public static final int RC_SIGN_IN = 0;
 
     //Objects from layout
-    EditText etZipcode, etDistrict, etState;
+    EditText etZipcode;
     Button button_letMeKnow;
     Switch plus18, plus45, covishield, covaxin, sputnikv, free, paid;
+    Spinner sDistrict, sState;
     // Storing the dta from objects
     String district,state,zipcode;
     // Others
@@ -52,8 +65,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         etZipcode = (EditText) findViewById(R.id.zipcode);
-        etDistrict = (EditText) findViewById(R.id.district);
-        etState = (EditText) findViewById(R.id.state);
+        sDistrict = (Spinner) findViewById(R.id.district);
+        sState = (Spinner) findViewById(R.id.state);
         button_letMeKnow = (Button)findViewById(R.id.button_letMeKnow);
         plus18 = (Switch) findViewById(R.id.switch_plus18);
         plus45 = (Switch) findViewById(R.id.switch_plus45);
@@ -62,6 +75,57 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
         sputnikv = (Switch) findViewById(R.id.switch_sputnikv);
         free = (Switch) findViewById(R.id.switch_free);
         paid = (Switch) findViewById(R.id.switch_paid);
+
+        JSONArray listStates = jsonUtils.getListOfStatesAndDistricts(this);
+        HashMap<String, Integer> districtsValues = new HashMap<>();
+        HashMap<String, Integer> statesValues = new HashMap<>();
+        HashMap<String, List<String>> statesDistrictis = new HashMap<>();
+        List<String> states =  new ArrayList<String>();
+
+        for (int i=0; i < listStates.length(); i++) {
+            try {
+                JSONObject state = listStates.getJSONObject(i);
+
+                String state_name = state.getString("state_name");
+                int state_id = state.getInt("state_id");
+                states.add(state_name);
+                statesValues.put(state_name,state_id);
+
+                List<String> districts =  new ArrayList<String>();
+                JSONArray jsonStateDistricts = state.getJSONArray("districts");
+                for(int j=0; j < jsonStateDistricts.length(); j++) {
+                    String district_name = jsonStateDistricts.getJSONObject(j).getString("district_name");
+                    int district_id = jsonStateDistricts.getJSONObject(j).getInt("district_id");
+                    districts.add(district_name);
+                    districtsValues.put(district_name,district_id);
+                }
+                statesDistrictis.put(state_name,districts);
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        ArrayAdapter<String> satesAdapter= new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, states);
+        satesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sState.setAdapter(satesAdapter);
+        sState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+               
+                ArrayAdapter<String> districtAdapter= new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item, statesDistrictis.get(parentView.getItemAtPosition(position)));
+                districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                sDistrict.setAdapter(districtAdapter);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
+
 
         button_letMeKnow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,8 +138,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
                 localUser.setFree(free.isChecked());
                 localUser.setPaid(paid.isChecked());
                 localUser.setPin(etZipcode.getText().toString().equalsIgnoreCase("") ? -1 : Integer.valueOf(etZipcode.getText().toString()));
-                localUser.setDistrict(etDistrict.getText().toString().equalsIgnoreCase("") ? -1 : Integer.valueOf(etDistrict.getText().toString()));
-                localUser.setState(etState.getText().toString().equalsIgnoreCase("") ? -1 : Integer.valueOf(etState.getText().toString()));
+                localUser.setDistrict(sDistrict.getSelectedItem().toString().equalsIgnoreCase("") ? -1 : Integer.valueOf(sDistrict.getSelectedItem().toString()));
+                localUser.setState(sState.getSelectedItem().toString().equalsIgnoreCase("") ? -1 : Integer.valueOf(sState.getSelectedItem().toString()));
                 firebaseCalls.uploadLocalUserData(localUser);
             }
         });
@@ -148,8 +212,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
 
 
     private void setupUIFromLocalUser(){
-        etDistrict.setText(localUser.getDistrict()==-1?"":String.valueOf(localUser.getDistrict()));
-        etState   .setText(localUser.getState()==-1?"":String.valueOf(localUser.getState()));
+        //etDistrict.setText(localUser.getDistrict()==-1?"":String.valueOf(localUser.getDistrict()));
+        //etState   .setText(localUser.getState()==-1?"":String.valueOf(localUser.getState()));
         etZipcode .setText(localUser.getPin()==-1?"":String.valueOf(localUser.getPin()));
         plus18.setChecked(localUser.isPlus18());
         plus45.setChecked(localUser.isPlus45());
