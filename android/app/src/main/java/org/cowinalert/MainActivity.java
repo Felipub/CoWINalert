@@ -60,9 +60,15 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
     private LocalUser localUser;
     private FirebaseCalls firebaseCalls;
 
-    HashMap<String, Integer> districtsValues = new HashMap<>();
-    HashMap<String, Integer> statesValues = new HashMap<>();
+    HashMap<String, Integer> districtsValues       = new HashMap<>();
+    HashMap<String, Integer> statesValues          = new HashMap<>();
+    HashMap<Integer, String> valuesDistricts       = new HashMap<>();
+    HashMap<Integer, String> valuesStates          = new HashMap<>();
+    HashMap<String, List<String>> statesDistrictis = new HashMap<>();
 
+    ArrayAdapter<String> statesAdapter;
+    ArrayAdapter<String> districtAdapter;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +88,9 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
         JSONArray listStates = jsonUtils.getListOfStatesAndDistricts(this);
         districtsValues = new HashMap<>();
         statesValues = new HashMap<>();
-        HashMap<String, List<String>> statesDistrictis = new HashMap<>();
+        valuesDistricts = new HashMap<>(); //aggg no me gusta esto pero...ahora mismo no se me ocurre otra cosa :/
+        valuesStates = new HashMap<>();
+        statesDistrictis = new HashMap<>();
         List<String> states =  new ArrayList<String>();
 
         for (int i=0; i < listStates.length(); i++) {
@@ -93,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
                 int state_id = state.getInt("state_id");
                 states.add(state_name);
                 statesValues.put(state_name,state_id);
+                valuesStates.put(state_id,state_name);
 
                 List<String> districts =  new ArrayList<String>();
                 JSONArray jsonStateDistricts = state.getJSONArray("districts");
@@ -101,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
                     int district_id = jsonStateDistricts.getJSONObject(j).getInt("district_id");
                     districts.add(district_name);
                     districtsValues.put(district_name,district_id);
+                    valuesDistricts.put(district_id,district_name);
                 }
                 statesDistrictis.put(state_name,districts);
 
@@ -110,16 +120,13 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
             }
         }
 
-        ArrayAdapter<String> satesAdapter= new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, states);
-        satesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sState.setAdapter(satesAdapter);
+        statesAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, states);
+        statesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sState.setAdapter(statesAdapter);
         sState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-               
-                ArrayAdapter<String> districtAdapter= new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item, statesDistrictis.get(parentView.getItemAtPosition(position)));
-                districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                sDistrict.setAdapter(districtAdapter);
+                fullfillDistrictsFromState((String)parentView.getItemAtPosition(position));
             }
 
             @Override
@@ -213,7 +220,13 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
         setupUIFromLocalUser();
     }
 
+    private void fullfillDistrictsFromState(String state){
+        districtAdapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item, statesDistrictis.get(state));
+        districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sDistrict.setAdapter(districtAdapter);
+    }
 
+    int lazyAuxIndexPosition;
     private void setupUIFromLocalUser(){
         //etDistrict.setText(localUser.getDistrict()==-1?"":String.valueOf(localUser.getDistrict()));
         //etState   .setText(localUser.getState()==-1?"":String.valueOf(localUser.getState()));
@@ -225,6 +238,19 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
         covishield.setChecked(localUser.isCovishield());
         free.setChecked(localUser.isFree());
         paid.setChecked(localUser.isPaid());
+
+        String userState = valuesStates.get(((Long)localUser.getState()).intValue());
+        lazyAuxIndexPosition = statesAdapter.getPosition(userState);
+        sState.setSelection(lazyAuxIndexPosition);
+
+        fullfillDistrictsFromState(userState);
+        String userDistrict = valuesDistricts.get(((Long)localUser.getDistrict()).intValue());
+        lazyAuxIndexPosition = districtAdapter.getPosition(userDistrict);
+        sDistrict.postDelayed(new Runnable() {
+            public void run() {
+                sDistrict.setSelection(lazyAuxIndexPosition);
+            }
+        }, 100);
     }
 
 }
