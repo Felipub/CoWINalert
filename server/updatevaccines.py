@@ -19,7 +19,8 @@ class FirebaseDB:
         from firebase_admin import firestore
 
         # Use a service account
-        cred = credentials.Certificate('cowinalert-25025-5dc6b50e090a.json')
+        script_path = os.path.dirname(os.path.realpath(__file__))
+        cred = credentials.Certificate(script_path + '/cowinalert-25025-5dc6b50e090a.json')
         firebase_admin.initialize_app(cred)
 
         self.db = firestore.client()
@@ -75,7 +76,9 @@ def CowinApiRequestInfo(request_id):
         subdir = 'calendarByDistrict'
         search_by = 'district_id'
     else:
-        raise Exception("Unknown search token id.")
+        #raise Exception("Unknown search token id.")
+        print("   ! Unknown search token id: " + str(request_id))
+        return {'centers' : {}}
 
     url = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/' + subdir + '?' + search_by + '=' + str(request_id) + '&date=' + today
     #print(url)
@@ -127,7 +130,8 @@ users = FB_DB.GetUsers()
 dict_requests = GetRequestsFromUsers(users)
 
 for request_id in dict_requests:
-    #print(f'{doc.id} => {doc.to_dict()}')
+    #print(" --- "+str(request_id))
+
     if (request_id == -1): continue
 
     json_current_vaccines = CowinApiRequestInfo(request_id)
