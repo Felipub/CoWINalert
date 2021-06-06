@@ -1,5 +1,9 @@
 
 .remote-sync.json
 server/cowinalert-25025-5dc6b50e090a.json
-Private_key_*
+
 server/last_repertoire/
+
+last_repertoire/
+
+**/[Pp]rivate_key*

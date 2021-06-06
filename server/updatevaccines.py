@@ -52,14 +52,16 @@ class FirebaseDB:
         print('   - Alarm notification sent to user: ' + user['uid'])
 
 def GetRequestsFromUsers(dict_users):
+    print("Users in Firebase: ")
     requests = {}
+
     for user in dict_users.values():
         #DELETE#user_data = doc.to_dict()
-        print(user)
-        print()
+        print("\t" + str(user))
         requests[user['district']] = ''
         requests[user['pin']] = ''
 
+    print()
     #print(requests)
     return requests
 
@@ -192,6 +194,8 @@ for request_id in dict_requests:
     # Overwrite the previous json with current
     with open(file_path, 'w') as outfile:
         json.dump(json_current_vaccines, outfile)
+
+print("Done :)\n")
 
 ''' TRASH CODE
 Duplicate Firebase document:

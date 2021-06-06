@@ -17,6 +17,6 @@ I started with this kid: https://www.youtube.com/watch?v=YbGAUEjTKg4&t=822s
 - Add crontab job to execute server script every min -
     $crotab -e
     ...add this line
-    * * * * *  <path_to_script>/updatevaccines.py >> <path_to_log>/updatevaccines.log 2>> <path_to_log>/updatevaccines.err.log
+    * * * * *  date >> <path_to_log>/updatevaccines.err.log ; <path_to_script>/updatevaccines.py >> <path_to_log>/updatevaccines.log 2>> <path_to_log>/updatevaccines.err.log
 
 Then attack!!
