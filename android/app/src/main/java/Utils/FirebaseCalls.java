@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.cowinalert.MainActivity;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import Classes.LocalUser;
@@ -31,11 +32,31 @@ public class FirebaseCalls {
         this.firebaseInterface =  firebaseInterface;
     }
 
+    public void createUserForTheFirstTime(String uid){
+        Map<String, Object> payload = new HashMap<>();
+        payload.put(LocalUser.KEY_UID , uid);
+        db.collection("users")
+                .document(uid)
+                .set(payload)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG,"User created for the first time");
+                        firebaseInterface.userCreatedForTheFirstTime(true);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error creating user", e);
+                        firebaseInterface.userCreatedForTheFirstTime(false);
+                    }
+                });
+    }
     public void uploadLocalUserData(LocalUser user){
-
         db.collection("users")
                 .document(user.getUid())
-                .set(user.getLocalUserForFirebase())
+                .update(user.getLocalUserForFirebase())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -46,6 +67,29 @@ public class FirebaseCalls {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error updating user data", e);
+                    }
+                });
+    }
+
+    public void updateUserToken(String userUID, String token){
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put(LocalUser.KEY_TOKEN , token);
+
+        db.collection("users")
+                .document(userUID)
+                .update(payload)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG,"User token updated");
+                        firebaseInterface.tokenSuccessfullyUpdated(token);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating user token", e);
                     }
                 });
     }
@@ -63,6 +107,7 @@ public class FirebaseCalls {
                         firebaseInterface.onGetUserDataSuccess(document);
                     } else {
                         Log.d(TAG, "No such document");
+                        firebaseInterface.onGetUserDataSuccess(null);
                     }
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());

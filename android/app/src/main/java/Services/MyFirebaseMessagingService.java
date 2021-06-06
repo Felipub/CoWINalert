@@ -21,20 +21,18 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
-import android.util.Log;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
-
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
 import org.cowinalert.MainActivity;
 
@@ -156,7 +154,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        // TODO: Implement this method to send token to your app server.
+        SharedPreferences shared = getSharedPreferences(MainActivity.PREFS, MODE_PRIVATE);
+        SharedPreferences.Editor editor = shared.edit();
+        editor.putString(MainActivity.PREFS_ACTUAL_TOKEN, token);
+        editor.commit();
     }
 
     /**

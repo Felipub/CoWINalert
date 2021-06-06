@@ -3,7 +3,9 @@ package org.cowinalert;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,10 +16,13 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -40,8 +45,11 @@ import Utils.jsonUtils;
 
 public class MainActivity extends AppCompatActivity implements FirebaseInterface {
 
-    public static final String TAG = "CowinAlarm:::";
-    public static final int RC_SIGN_IN = 0;
+    public static final String TAG                = "CowinAlarm:::";
+    public static final int    RC_SIGN_IN         = 0;
+    public static final String PREFS              = "cowin_prefs";
+    public static final String PREFS_ACTUAL_TOKEN = "actual_token";
+    public static final String PREFS_LAST_TOKEN   = "last_token";
 
     //Objects from layout
     EditText etZipcode;
@@ -68,10 +76,17 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
 
     ArrayAdapter<String> statesAdapter;
     ArrayAdapter<String> districtAdapter;
-    
+
+    SharedPreferences prefs;
+    SharedPreferences.Editor editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        prefs  = getSharedPreferences(MainActivity.PREFS, MODE_PRIVATE);
+        editor = prefs.edit();
+
         setContentView(R.layout.activity_main);
         etZipcode = (EditText) findViewById(R.id.zipcode);
         sDistrict = (Spinner) findViewById(R.id.district);
@@ -179,7 +194,9 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
             localUser = new LocalUser(this, FirebaseAuth.getInstance().getCurrentUser().getUid());
             Log.d(TAG,localUser.toString());
             setupUIFromLocalUser();
+            userTokenCheck();
         }
+
 
     }
 
@@ -215,9 +232,30 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
 
     @Override
     public void onGetUserDataSuccess(DocumentSnapshot data) {
-        Log.d(TAG,"Hey, wait a second, we already have a user on the ddbb, get his/her data back "+data.getData().toString());
-        localUser.setLocalUserFromFirebase(data.getData());
-        setupUIFromLocalUser();
+
+        if(data==null){
+            Log.d(TAG,"User not in ddbb");
+            firebaseCalls.createUserForTheFirstTime(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        }else {
+            Log.d(TAG, "Hey, wait a second, we already have a user on the ddbb, get his/her data back " + data.getData().toString());
+            localUser.setLocalUserFromFirebase(data.getData());
+            userTokenCheck();
+            setupUIFromLocalUser();
+        }
+    }
+
+    @Override
+    public void tokenSuccessfullyUpdated(String token) {
+        Log.d(TAG,"TOKEN successfully saved in Firebase");
+        editor.putString(MainActivity.PREFS_LAST_TOKEN, token);
+        editor.commit();
+    }
+
+    @Override
+    public void userCreatedForTheFirstTime(boolean successfully) {
+       if(successfully){
+           userTokenCheck();
+       }
     }
 
     private void fullfillDistrictsFromState(String state){
@@ -252,5 +290,57 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
             }
         }, 100);
     }
+
+    private void userTokenCheck(){
+        if(localUser==null) return;
+
+        Log.d(TAG,"Checking User Token");
+        String actualToken = prefs.getString(PREFS_ACTUAL_TOKEN,"-1");
+        String lastToken   = prefs.getString(PREFS_LAST_TOKEN  ,"-1");
+
+        if(actualToken.equalsIgnoreCase("-1")){
+            //It is the user first time, so go and get the token
+            Log.d(TAG,"Checking User Token - first time");
+            FirebaseMessaging.getInstance().getToken()
+                    .addOnCompleteListener(new OnCompleteListener<String>() {
+                        @Override
+                        public void onComplete(@NonNull Task<String> task) {
+                            if (!task.isSuccessful()) {
+                                Log.d(TAG, "Checking User Token - Fetching FCM registration token failed", task.getException());
+                                retryUserTokenCheck(1000);
+                                return;
+                            }
+
+                            // Get new FCM registration token
+                            String token = task.getResult();
+
+                            editor.putString(MainActivity.PREFS_ACTUAL_TOKEN, token);
+                            editor.commit();
+                            firebaseCalls.updateUserToken(localUser.getUid(), token);
+                            Log.d(TAG,"Checking User Token - saved successfully");
+                        }
+                    });
+
+        }else if(!actualToken.equalsIgnoreCase(lastToken)){
+            //update
+            Log.d(TAG,"Checking User Token - It has changed, lets update it");
+            firebaseCalls.updateUserToken(localUser.getUid(), actualToken);
+            retryUserTokenCheck(5000); //just in case
+        }else{
+            Log.d(TAG,"Checking User Token - everything sweet and smooth");
+        }
+    }
+
+
+    private void retryUserTokenCheck(long milliseconds){
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                userTokenCheck();
+            }
+        }, milliseconds);
+    }
+
 
 }

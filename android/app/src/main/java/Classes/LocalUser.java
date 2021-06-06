@@ -19,8 +19,9 @@ public class LocalUser {
     public static final String KEY_SPUTNIKV   = "sputnikv";
     public static final String KEY_FREE       = "free";
     public static final String KEY_PAID       = "paid";
+    public static final String KEY_TOKEN      = "token";
 
-    private long     pin        = -1,
+    private long    pin        = -1,
                     state      = -1,
                     district   = -1;
     private String  uid        = null;
