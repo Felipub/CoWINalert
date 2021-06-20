@@ -1,2 +1,12 @@
+
+.remote-sync.json
+server/cowinalert-25025-5dc6b50e090a.json
+
+server/last_repertoire/
+
+last_repertoire/
+
+**/[Pp]rivate_key*
+
 # IntelliJ
 android/.idea/

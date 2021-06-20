@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="zipcode" type="id"/>
+    <item name="topPanel" type="id"/>
+    <item name="state" type="id"/>
+    <item name="district" type="id"/>
+    <item name="buttonZipcode" type="id"/>
+    <item name="buttonCity" type="id"/>
+    <item name="dateGrid" type="id"/>
+    <item name="vaccineGrid" type="id"/>
+    <item name="availabilityGrid" type="id"/>
+
+</resources>

@@ -6,11 +6,17 @@ In remote server:
 I started with this kid: https://www.youtube.com/watch?v=YbGAUEjTKg4&t=822s
 
 - Needs Python 3
-- Install Chrome - to open the web
-- Install Selenum - I.e: https://selenium-python.readthedocs.io/installation.html - to automate the web access
-- Install the Chrome driver for Selenium from here: https://sites.google.com/a/chromium.org/chromedriver/downloads (check your Chrome version)
-    - Then place the *chromedriver* file somewhere on the reach of your $PATH env. variable. I.e. /home/youruser/.local/bin/
-- Install Xvfb - to open the browser headless
-- Install xvfbwrapper - https://pypi.org/project/xvfbwrapper/ - To wrap up the browser and execute it headlessly
+- Install Firebase module for Python - https://pypi.org/project/python-firebase/
+    $ sudo pip install requests==1.1.0
+    $ sudo pip install python-firebase
+- Install firebase_admin module for Python - https://firebase.google.com/docs/admin/setup#add-sdk
+    $ sudo pip install firebase-admin
+    maybe you need to intall these other thing to make it work:
+    $ sudo pip install testresources
+- Get the .json with the credentials from Firebase to run the script into the server diectory (or contact me for the file :)
+- Add crontab job to execute server script every min -
+    $crotab -e
+    ...add this line
+    * * * * *  date >> <path_to_log>/updatevaccines.err.log ; <path_to_script>/updatevaccines.py >> <path_to_log>/updatevaccines.log 2>> <path_to_log>/updatevaccines.err.log
 
-then attack!!
+Then attack!!
