@@ -102,20 +102,21 @@ def AlertNewVaccinesToUsers(req_id, center, session, new_doses_1, new_doses_2, d
 
     for user in dict_users.values():
 
-        if (user['district'] == req_id or user['pin'] == req_id):
+        if (('district' in user and user['district'] == req_id)
+            or   ('pin' in user and user['pin'] == req_id)):
 
-            if ( (user['covishield'] and session['vaccine'] == 'COVISHIELD')
-                or (user['sputnikv'] and session['vaccine'] == 'SPUTNIKV') # TO CONFIRM!!
-                or  (user['covaxin'] and session['vaccine'] == 'COVAXIN')):
+            if ( ('covishield' in user and user['covishield'] and session['vaccine'] == 'COVISHIELD')
+                or ('sputnikv' in user and user['sputnikv'] and session['vaccine'] == 'SPUTNIKV') # TO CONFIRM!!
+                or  ('covaxin' in user and user['covaxin'] and session['vaccine'] == 'COVAXIN')):
 
-                if (   (user['free'] and center['fee_type'] == 'Free')
-                    or (user['paid'] and center['fee_type'] == 'Paid')):
+                if (   ('free' in user and user['free'] and center['fee_type'] == 'Free')
+                    or ('paid' in user and user['paid'] and center['fee_type'] == 'Paid')):
 
-                    if (    (user['plus18'] and session['min_age_limit'] == 18)
-                        or  (user['plus45'] and session['min_age_limit'] == 45)):
+                    if (    ('plus18' in user and user['plus18'] and session['min_age_limit'] == 18)
+                        or  ('plus45' in user and user['plus45'] and session['min_age_limit'] == 45)):
 
-                        if (   (user['dose1'] and new_doses_1 > 0)
-                            or (user['dose2'] and new_doses_2 > 0)):
+                        if (   ('dose1' in user and user['dose1'] and new_doses_1 > 0)
+                            or ('dose2' in user and user['dose2'] and new_doses_2 > 0)):
 
                             fb_db.SendAlert(user)
                             alerts = alerts + 1
