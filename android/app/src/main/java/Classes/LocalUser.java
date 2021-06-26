@@ -20,6 +20,9 @@ public class LocalUser {
     public static final String KEY_FREE       = "free";
     public static final String KEY_PAID       = "paid";
     public static final String KEY_TOKEN      = "token";
+    public static final String KEY_NOTIFY     = "notify";
+    public static final String KEY_DOSE_1     = "dose1";
+    public static final String KEY_DOSE_2     = "dose2";
 
     private long    pin        = -1,
                     state      = -1,
@@ -31,7 +34,10 @@ public class LocalUser {
                     covaxin    = false,
                     sputnikV   = false,
                     free       = false,
-                    paid       = false;
+                    paid       = false,
+                    notify     = false,
+                    dose_1     = false,
+                    dose_2     = false;
 
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor sharePrefEditor;
@@ -51,6 +57,9 @@ public class LocalUser {
         this.sputnikV   = sharedPref.getBoolean(KEY_SPUTNIKV   ,false);
         this.free       = sharedPref.getBoolean(KEY_FREE       ,false);
         this.paid       = sharedPref.getBoolean(KEY_PAID       ,false);
+        this.notify     = sharedPref.getBoolean(KEY_NOTIFY     ,false);
+        this.dose_1     = sharedPref.getBoolean(KEY_DOSE_1     ,false);
+        this.dose_2     = sharedPref.getBoolean(KEY_DOSE_2     ,false);
     }
 
     public void localUserLoadFromPreferences(){
@@ -74,6 +83,9 @@ public class LocalUser {
         user.put(KEY_SPUTNIKV   , sputnikV);
         user.put(KEY_FREE       , free);
         user.put(KEY_PAID       , paid);
+        user.put(KEY_NOTIFY     , notify);
+        user.put(KEY_DOSE_1     , dose_1);
+        user.put(KEY_DOSE_2     , dose_2);
         return user;
     }
     public void setLocalUserFromFirebase(Map<String, Object> input){
@@ -87,6 +99,10 @@ public class LocalUser {
         setSputnikV  ((boolean)input.get(KEY_SPUTNIKV));
         setFree      ((boolean)input.get(KEY_FREE));
         setPaid      ((boolean)input.get(KEY_PAID ));
+        setNotify    ((boolean)input.get(KEY_NOTIFY));
+        setDose1     ((boolean)input.get(KEY_DOSE_1));
+        setDose2     ((boolean)input.get(KEY_DOSE_2));
+
     }
 
     private void savePref(String key, Object value){
@@ -156,6 +172,21 @@ public class LocalUser {
         savePref(KEY_PAID, paid);
     }
 
+    public void setDose1(boolean dose){
+        this.dose_1 = dose;
+        savePref(KEY_DOSE_1, dose);
+    }
+
+    public void setDose2(boolean dose){
+        this.dose_2 = dose;
+        savePref(KEY_DOSE_2, dose);
+    }
+
+    public void setNotify(boolean notify){
+        this.notify = notify;
+        savePref(KEY_NOTIFY, notify);
+    }
+
     public long getPin() {
         return pin;
     }
@@ -199,6 +230,12 @@ public class LocalUser {
     public boolean isLogged(){
         return uid!=null;
     }
+
+    public boolean getDose1(){ return dose_1;}
+
+    public boolean getDose2(){ return dose_2;}
+
+    public boolean getNotify(){ return notify;}
 
     @Override
     public String toString(){
