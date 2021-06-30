@@ -26,7 +26,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import Classes.LocalUser;
 import Interfaces.FirebaseInterface;
@@ -165,6 +163,9 @@ public class MainActivity extends AppCompatActivity implements FirebaseInterface
                 localUser.setPin(etZipcode.getText().toString().equalsIgnoreCase("") ? -1 : Integer.valueOf(etZipcode.getText().toString()));
                 localUser.setDistrict(districtsValues.get(sDistrict.getSelectedItem().toString()));
                 localUser.setState(statesValues.get(sState.getSelectedItem().toString()));
+                localUser.setDose1(false);
+                localUser.setDose2(false);
+                localUser.setNotify(false);
                 firebaseCalls.uploadLocalUserData(localUser);
             }
         });
